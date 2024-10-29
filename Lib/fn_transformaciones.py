@@ -12,7 +12,7 @@ pd.set_option('future.no_silent_downcasting', True)
 def tx_depurar_datos_nulos(df):
     # Solo estas columnas ameritan borrado completo del registro si son nulas
     columnas_requeridas = [
-        'CALIFICACION', 'FECHA_INST', 'FECHA_CALIFICACION', 'DIAMETRO', 'LONGITUD', 'PROF_BATEA', 'PROF_BATE1',
+        'CALIFICACION', 'FECHA_INSTALACION', 'FECHA_CALIFICACION', 'DIAMETRO', 'LONGITUD', 'PROF_BATEA_ENTRADA', 'PROF_BATEA_SALIDA',
     ]
     df = df.dropna(subset=columnas_requeridas)
 
@@ -28,8 +28,8 @@ def tx_depurar_datos_nulos(df):
 # ------------------------------------------------------------------------------------------------------------
 def tx_convertir_tipo_datos(df):
     df['CALIFICACION'] = df['CALIFICACION'].astype(int)
-    df['FECHA_INST'] = pd.to_datetime(df['FECHA_INST'])
-    df['FECHA_CALIFICACION'] = pd.to_datetime(df['FECHA_CALIFICACION'])
+    df['FECHA_INSTALACION'] = pd.to_datetime(df['FECHA_INSTALACION'],errors='coerce')
+    df['FECHA_CALIFICACION'] = pd.to_datetime(df['FECHA_CALIFICACION'],errors='coerce')
 
     return df
 
@@ -46,12 +46,12 @@ def tx_validar_rango_datos(df):
     df = df[df['LONGITUD'].between(1, 250)]
 
     # Rango de profundidades de batea
-    df = df[df['PROF_BATEA'] <= 15]
-    df = df[df['PROF_BATE1'] <= 15]
+    df = df[df['PROF_BATEA_ENTRADA'] <= 15]
+    df = df[df['PROF_BATEA_SALIDA'] <= 15]
 
     # Rango de fechas
     fecha_actual = datetime.now()
-    df = df[df['FECHA_INST'].between('1923-01-01', fecha_actual)]
+    df = df[df['FECHA_INSTALACION'].between('1923-01-01', fecha_actual)]
     df = df[df['FECHA_CALIFICACION'].between('1923-01-01', fecha_actual)]
 
     return df
@@ -64,7 +64,7 @@ def tx_unificar_unidades(df):
 
 # ------------------------------------------------------------------------------------------------------------
 def tx_agregar_edades(df):
-    df['EDAD'] = abs((df['FECHA_CALIFICACION'] - df['FECHA_INST'])).dt.days / 365.25
+    df['EDAD'] = abs((df['FECHA_CALIFICACION'] - df['FECHA_INSTALACION'])).dt.days / 365.25
 
     #fecha_actual = datetime.now()
     #segundos_del_ano = 365 * 24 * 60 * 60
@@ -81,7 +81,7 @@ def tx_agregar_areas(df):
 
 # ------------------------------------------------------------------------------------------------------------
 def tx_recalcular_pendientes(df):
-    df['PENDIENTE'] = (df['PROF_BATEA'] - df['PROF_BATE1']) / df['LONGITUD']
+    df['PENDIENTE'] = (df['PROF_BATEA_ENTRADA'] - df['PROF_BATEA_SALIDA']) / df['LONGITUD']
     return df
 
 # ------------------------------------------------------------------------------------------------------------
@@ -194,8 +194,8 @@ def tx_seleccionar_columnas(df):
         'DIAMETRO',
         'LONGITUD',
         'AREA',
-        'PROF_BATEA',
-        'PROF_BATE1',
+        'PROF_BATEA_ENTRADA',
+        'PROF_BATEA_SALIDA',
         'PENDIENTE',
         #'TIPO_RED', # eliminada
         'TIPO_AGUA',
