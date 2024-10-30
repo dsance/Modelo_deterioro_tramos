@@ -206,6 +206,7 @@ def tx_seleccionar_columnas(df):
         'ZONA_SUR',
         'MUNICIPIO_MEDELLIN',
         'ESTADO_OPERACION',
+        'LONGITUD_AGUAS_ARRIBA',
     ]
 
     return df[columnnas_utiles]
@@ -239,7 +240,7 @@ def tx_aplicar_transformaciones(df):
         'Seleccionar columnas útiles ' : tx_seleccionar_columnas,
 
         # Transformaciones de estandarización
-        #'Normalizar numéricas        ' : tx_normalizar_numericas,
+        'Normalizar numéricas        ' : tx_normalizar_numericas,
     }
 
     df_transformado = df.copy()
